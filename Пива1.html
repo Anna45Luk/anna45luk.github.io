@@ -1,20 +1,357 @@
-<! DOCTYPE html >
-<html lang-"en"> 
+<!DOCTYPE html>
+<html lang="en">
 <head>
-‹meta charset="UTF-8">
-‹meta name "viewport" content "width=device-width, initial-scale=1.0">
-‹title>Виртуальная Страница</title:
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PKEB8FE4Y9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slider with Custom Delay</title>
+  <style>
+    @font-face {
+      font-family: 'DinPro';
+      src: url('fonts/DinPro-Bold.woff2') format('woff2');
+      font-weight: bold;
+      font-style: normal;
+    }
 
-  gtag('config', 'G-PKEB8FE4Y9');
-</script>
+    @font-face {
+      font-family: 'Geometria';
+      src: url('fonts/Geometria-Medium.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'Geometria', Arial, sans-serif;
+      margin: 0;
+      background-color: #fefefe;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+
+    header {
+      width: 100%;
+      background-color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    header img {
+      max-height: 50px;
+    }
+
+    header a {
+      margin-right: 40px;
+      font-family: 'DinPro', Arial, sans-serif;
+      font-size: 1.2rem;
+      color: #575757;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    header a:hover {
+      color: #f23200;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    nav h1, nav h2, nav h3, nav h4, nav h5 {
+      font-family: 'Geometria', Arial, sans-serif;
+      font-size: 1rem;
+      margin: 0;
+      color: #575757;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    nav a:hover {
+      color: #f23200;
+    }
+
+    .food-gallery {
+      margin-top: 40px;
+      width: 80%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+.food-gallery a {
+  text-decoration: none; /* Убирает подчеркивание */
+  color: inherit; /* Наследует цвет от родительского элемента */
+}
+
+.food-gallery a:hover {
+  color: inherit; /* Сохраняет цвет при наведении */
+}
+
+    .image-container {
+      position: relative; /* контейнер для изображения и overlay */
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4); /* полупрозрачный фон */
+      color: #fff;
+      font-family: 'Geometria', Arial, sans-serif;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0; /* скрыто по умолчанию */
+      transition: opacity 0.3s ease;
+      border-radius: 10px; /* повторяет закругление изображения */
+    }
+
+    .image-container:hover .overlay {
+      opacity: 1; /* показывает overlay при наведении */
+    }
+
+    main {
+      margin-top: 50px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #slider {
+      width: 1190px;
+      height: 400px;
+      margin: 20px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      background-color: #fff;
+    }
+
+    #slider img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    #slider img.active {
+      display: block;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .controls {
+      margin: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      outline: none;
+      background-color: #fff;
+      color: #333;
+      font-family: 'Geometria', Arial, sans-serif;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #575757;
+      color: #fff;
+      font-family: 'DinPro', Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #f23200;
+      transform: scale(1.05);
+    }
+
+    #completionMessage {
+      display: none;
+      font-size: 1.5rem;
+      color: #F23200;
+      margin-top: 20px;
+      font-family: 'Geometria', Arial, sans-serif;
+    }
+
+    #foodGallery {
+      margin-top: 40px;
+      width: 80%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    #foodGallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    #delay {
+      width: 140px;
+    }
+
+    #imageCount {
+      width: 260px;
+    }
+  </style>
 </head>
-‹body>
-<h1>Добро пожаловать на виртуальную страницу!</h1>
+<body>
+  <header>
+    <img src="Frame 7.png" alt="Company Logo">
+    <a href="tel:7767">77 67</a>
+  </header>
+  <main>
+    <nav>
+      <h1><a href="https://garage.by/minsk/burgery-sendvichi">Бургеры</a></h1>
+      <h2><a href="https://garage.by/minsk/pitstsy">Делло-пиццы</a></h2>
+      <h3><a href="https://garage.by/minsk/pitstsy">Пиццы</a></h3>
+      <h4><a href="https://garage.by/minsk/salaty">Салаты</a></h4>
+      <h5><a href="https://garage.by/minsk/deserty">Десерты</a></h5>
+    </nav>
+    <div id="slider"></div>
+    <div id="completionMessage">Просмотр завершен!</div>
+    <div class="controls">
+      <input type="number" id="delay" placeholder="Задержка(сек)" min="1">
+      <input type="number" id="imageCount" placeholder="Кол-во изображений (макс 5)" min="1" max="5">
+      <button id="start">Смотреть акции</button>
+      <button id="stop">Остановить просмотр</button>
+    </div>
+
+    <div class="food-gallery">
+      <div class="image-container">
+        <img src="IMG_0071.PNG" alt="Чизбургер">
+        <div class="overlay"><a href="https://garage.by/minsk/burgery-sendvichi/burger-chedder-bekon">Чизбургер</a></div>
+      </div>
+      <div class="image-container">
+        <img src="Пицца Мясная.jpg" alt="Пицца Мясная">
+        <div class="overlay"><a href="https://garage.by/minsk/pitstsy/pitstsa-miasnaia">Пицца Мясная</a></div>
+      </div>
+      <div class="image-container">
+        <img src="Пицца Пепперони.jpg" alt="Пицца Пепперони">
+        <div class="overlay"><a href="https://garage.by/minsk/pitstsy/pitstsa-pepperoni">Пицца Пепперони</a></div>
+      </div>
+      <div class="image-container">
+        <img src="Салаты_800х600_Цезарь с беконом M (2).jpg" alt="Цезарь с беконом">
+        <div class="overlay"><a href="https://garage.by/minsk/salaty/tsezar-s-bekonom-i-iaitsom">Цезарь с беконом</a></div>
+      </div>
+      <div class="image-container">
+        <img src="Карамельные рогалики__800x600_м.jpg" alt="Карамельные рогалики">
+        <div class="overlay"><a href="https://garage.by/minsk/deserty/karamelnye-rogaliki-s-grushei-i-bananom">Карамельные рогалики</a></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const slider = document.getElementById('slider');
+    const completionMessage = document.getElementById('completionMessage');
+    const startButton = document.getElementById('start');
+    const stopButton = document.getElementById('stop');
+    const delayInput = document.getElementById('delay');
+    const imageCountInput = document.getElementById('imageCount');
+
+    let images = new Map([
+      [1, '1190x400_c+собой_ИСХОДНИК-01.jpg'],
+      [2, '1190х400_15%_на_ДР_ИСХОДНИК_промокод_01.jpg'],
+      [3, '1190х400_ПОВТОРНИК_ИСХОДНИК-01.jpg'],
+      [4, 'Воскресенье_детям_1190х400_ИСХОДНИК_01.jpg'],
+      [5, 'Пенное_1190х400_ИСХОДНИК-01.jpg']
+    ]);
+
+    let interval;
+    let currentIndex = 0;
+    let selectedImages = [];
+
+    function startSlider() {
+      const delay = parseInt(delayInput.value) || 1;
+      let imageCount = parseInt(imageCountInput.value) || images.size;
+      if (imageCount > 5) imageCount = 5;
+
+      selectedImages = Array.from(images.values()).slice(0, imageCount);
+
+      if (selectedImages.length === 0) return;
+
+      currentIndex = 0;
+      completionMessage.style.display = 'none';
+
+      function showImage() {
+        slider.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = selectedImages[currentIndex];
+        img.classList.add('active');
+        slider.appendChild(img);
+
+        currentIndex++;
+        if (currentIndex >= selectedImages.length) {
+          clearInterval(interval);
+          completionMessage.style.display = 'block';
+        }
+      }
+
+      showImage();
+      interval = setInterval(showImage, delay * 1000);
+    }
+window.onload = function() {
+  const img = document.createElement('img');
+  img.src = selectedImages[0] || images.get(1); // Если selectedImages пуст, то используем первую картинку из оригинального массива
+  img.classList.add('active');
+  slider.appendChild(img);
+};
+    function stopSlider() {
+      clearInterval(interval);
+    }
+
+    startButton.addEventListener('click', startSlider);
+    stopButton.addEventListener('click', stopSlider);
+  </script>
 </body>
- </html>
+</html>
